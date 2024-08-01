@@ -1,6 +1,7 @@
 package com.gorkm.usersservice.application;
 
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -11,9 +12,10 @@ import java.util.Objects;
 public class UserServiceImpl implements UserService {
 
     private static final String GITHUB_API = "https://api.github.com/users/";
+
     private final WebClient webClient;
 
-
+    @Cacheable("userData")
     @Override
     public Mono<UserResponse> getUserData(String login) {
         if (Objects.nonNull(login)) {
