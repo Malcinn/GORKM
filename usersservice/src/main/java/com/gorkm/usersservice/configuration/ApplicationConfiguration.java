@@ -1,5 +1,7 @@
 package com.gorkm.usersservice.configuration;
 
+import com.gorkm.usersservice.application.CalculationService;
+import com.gorkm.usersservice.application.CalculationServiceImpl;
 import com.gorkm.usersservice.application.UserService;
 import com.gorkm.usersservice.application.UserServiceImpl;
 import com.gorkm.usersservice.interfaces.facade.UserFacade;
@@ -19,13 +21,18 @@ public class ApplicationConfiguration {
     }
 
     @Bean
+    public CalculationService calculationService() {
+        return new CalculationServiceImpl();
+    }
+
+    @Bean
     public UserService userService(WebClient webClient) {
         return new UserServiceImpl(webClient);
     }
 
     @Bean
-    UserFacade userFacade(UserService userService) {
-        return new UserFacadeImpl(userService);
+    UserFacade userFacade(UserService userService, CalculationService calculationService) {
+        return new UserFacadeImpl(userService, calculationService);
     }
 
 }

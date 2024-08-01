@@ -21,7 +21,7 @@ public class UserResponse {
 
     private String created_at;
 
-    private String followers;
+    private int followers;
 
-    private String public_repos;
+    private int public_repos;
 }

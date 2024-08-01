@@ -1,4 +1,5 @@
 package com.gorkm.usersservice.application;
 
-public class CalculationService {
+public interface CalculationService {
+    Double calculate(UserResponse userResponse);
 }
