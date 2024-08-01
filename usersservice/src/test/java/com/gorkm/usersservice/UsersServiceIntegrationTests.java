@@ -1,5 +1,6 @@
 package com.gorkm.usersservice;
 
+import com.gorkm.usersservice.interfaces.facade.UserResponseDTO;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,17 +31,17 @@ public class UsersServiceIntegrationTests {
                 .uri(USERS_URI + "/octocat")
                 .exchange()
                 .expectStatus().is2xxSuccessful()
-                .expectBody(String.class)
+                .expectBody(UserResponseDTO.class)
                 .consumeWith(userResponseDTOEntityExchangeResult -> {
                     UserResponseDTO userResponseDTO = userResponseDTOEntityExchangeResult.getResponseBody();
                     Assertions.assertNotNull(userResponseDTO);
-                    Assertions.assertEquals("11162108", userResponseDTO.getId());
-                    Assertions.assertEquals("Malcinn", userResponseDTO.getLogin());
-                    Assertions.assertEquals("Marcin", userResponseDTO.getName());
-                    Assertions.assertEquals("User", userResponseDTO.getType());
-                    Assertions.assertEquals("https://avatars.githubusercontent.com/u/11162108?v=4", userResponseDTO.getAvatarUrl());
-                    Assertions.assertEquals("2015-02-23T16:11:01Z", userResponseDTO.getCreatedAt());
-                    Assertions.assertEquals(null, userResponseDTO.getcalculations());
+                    Assertions.assertEquals("11162108", userResponseDTO.id());
+                    Assertions.assertEquals("Malcinn", userResponseDTO.login());
+                    Assertions.assertEquals("Marcin", userResponseDTO.name());
+                    Assertions.assertEquals("User", userResponseDTO.type());
+                    Assertions.assertEquals("https://avatars.githubusercontent.com/u/11162108?v=4", userResponseDTO.avatarUrl());
+                    Assertions.assertEquals("2015-02-23T16:11:01Z", userResponseDTO.createdAt());
+                    Assertions.assertEquals(null, userResponseDTO.calculations());
                     // null because liczba_followers dla tego usera to 0
                     // przez 0 nie można dzielić, wieć operacji calculations nie moża wykonać poprawnie.
                     // 6 / liczba_followers * (2 + liczba_public_repos)
@@ -55,17 +56,17 @@ public class UsersServiceIntegrationTests {
                 .uri(USERS_URI + "/octocat")
                 .exchange()
                 .expectStatus().is2xxSuccessful()
-                .expectBody(String.class)
+                .expectBody(UserResponseDTO.class)
                 .consumeWith(userResponseDTOEntityExchangeResult -> {
                     UserResponseDTO userResponseDTO = userResponseDTOEntityExchangeResult.getResponseBody();
                     Assertions.assertNotNull(userResponseDTO);
-                    Assertions.assertEquals("583231", userResponseDTO.getId());
-                    Assertions.assertEquals("octocat", userResponseDTO.getLogin());
-                    Assertions.assertEquals("The Octocat", userResponseDTO.getName());
-                    Assertions.assertEquals("User", userResponseDTO.getType());
-                    Assertions.assertEquals("https://avatars.githubusercontent.com/u/583231?v=4", userResponseDTO.getAvatarUrl());
-                    Assertions.assertEquals("2011-01-25T18:44:36Z", userResponseDTO.getCreatedAt());
-                    Assertions.assertTrue(userResponseDTO.getcalculations() > 0);
+                    Assertions.assertEquals("583231", userResponseDTO.id());
+                    Assertions.assertEquals("octocat", userResponseDTO.login());
+                    Assertions.assertEquals("The Octocat", userResponseDTO.name());
+                    Assertions.assertEquals("User", userResponseDTO.type());
+                    Assertions.assertEquals("https://avatars.githubusercontent.com/u/583231?v=4", userResponseDTO.avatarUrl());
+                    Assertions.assertEquals("2011-01-25T18:44:36Z", userResponseDTO.createdAt());
+                    Assertions.assertTrue(userResponseDTO.calculations() > 0);
                     // null because liczba_followers dla tego usera to 0
                     // przez 0 nie można dzielić, wieć operacji calculations nie moża wykonać poprawnie.
                     // 6 / liczba_followers * (2 + liczba_public_repos)
@@ -76,10 +77,10 @@ public class UsersServiceIntegrationTests {
 
     @Test
     public void shouldStoreAPIExecutionCountForEachUser() {
-        webTestClient
-                .get()
-                .uri(USERS_URI + "/octocat")
-                .exchange()
+//        webTestClient
+//                .get()
+//                .uri(USERS_URI + "/octocat")
+//                .exchange()
     }
 
     @Test
