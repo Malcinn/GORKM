@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 
     @Cacheable("userData")
     @Override
-    public Mono<UserResponse> getUserData(String login) {
+    public Mono<UserResponse> getUserData(final String login) {
         if (Objects.nonNull(login)) {
             return webClient.get()
                     .uri(GITHUB_API + login)

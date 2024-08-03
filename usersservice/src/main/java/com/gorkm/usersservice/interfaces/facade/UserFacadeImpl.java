@@ -20,7 +20,7 @@ public class UserFacadeImpl implements UserFacade {
         ).onErrorResume(Mono::error);
     }
 
-    public UserResponseDTO convert(UserResponse userResponse, Double calculation) {
+    private UserResponseDTO convert(UserResponse userResponse, Double calculation) {
         return new UserResponseDTO(userResponse.getId(),
                 userResponse.getLogin(),
                 userResponse.getName(),

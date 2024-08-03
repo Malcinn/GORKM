@@ -40,7 +40,6 @@ public class UsersServiceIntegrationTests {
     public void setup() {
         this.webTestClient = WebTestClient
                 .bindToApplicationContext(this.context)
-                // add Spring Security test Support
                 .apply(springSecurity())
                 .configureClient()
                 .filter(basicAuthentication(user, password))
@@ -89,7 +88,6 @@ public class UsersServiceIntegrationTests {
                 });
     }
 
-
     @Test
     public void shouldReturn500statusCodeAndErrorMessageIfUserDoesNotExistOrBackendServiceIsNotAvailable() {
         webTestClient
@@ -100,8 +98,7 @@ public class UsersServiceIntegrationTests {
                 .consumeWith(Assertions::assertNotNull);
     }
 
-
-    public String getLocalUrl() {
+    private String getLocalUrl() {
         return String.format("http://localhost:%s/%s", port, USERS_URI);
     }
 }

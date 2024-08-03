@@ -33,12 +33,12 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    UserFacade userFacade(UserService userService, CalculationService calculationService) {
+    public UserFacade userFacade(UserService userService, CalculationService calculationService) {
         return new UserFacadeImpl(userService, calculationService);
     }
 
     @Bean
-    UserAPICallEventListener userAPICallEventListener(UserApiStatsRepository userApiStatsRepository) {
+    public UserAPICallEventListener userAPICallEventListener(UserApiStatsRepository userApiStatsRepository) {
         return new UserAPICallEventListener(userApiStatsRepository);
     }
 
