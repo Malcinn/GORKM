@@ -3,7 +3,11 @@ package com.gorkm.usersservice.interfaces.web;
 import com.gorkm.usersservice.application.event.UserAPICallEvent;
 import com.gorkm.usersservice.application.exception.FetchUserException;
 import com.gorkm.usersservice.interfaces.facade.UserFacade;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -23,6 +27,9 @@ public class UsersController {
     private ApplicationEventPublisher applicationEventPublisher;
 
     @CircuitBreaker(name = "USERS_API", fallbackMethod = "fallback")
+    @RateLimiter(name = "USERS_API")
+    @Bulkhead(name = "USERS_API", fallbackMethod = "fallback")
+    @Retry(name = "USERS_API")
     @GetMapping("/{login}")
     public ResponseEntity<Mono<?>> getUserData(@PathVariable String login) {
         applicationEventPublisher.publishEvent(new UserAPICallEvent(this, login));
@@ -37,7 +44,7 @@ public class UsersController {
     }
 
     private ResponseEntity<Mono<?>> fallback(String param1, Exception exception) {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).contentType(MediaType.APPLICATION_JSON).body(Mono.just("Error, be aware!."));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).contentType(MediaType.APPLICATION_JSON).body(Mono.just("Error, message: " + exception.getMessage()));
     }
 
 
