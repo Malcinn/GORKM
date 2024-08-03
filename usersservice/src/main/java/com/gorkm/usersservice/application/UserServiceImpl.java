@@ -1,5 +1,6 @@
 package com.gorkm.usersservice.application;
 
+import com.gorkm.usersservice.application.exception.FetchUserException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class UserServiceImpl implements UserService {
                     .bodyToMono(UserResponse.class)
                     .onErrorResume(throwable -> {
                         LOGGER.error("User does not exist or there is no connection with backend service");
-                        return Mono.empty();
+                        return Mono.error(new FetchUserException(throwable.getMessage()));
                     });
 
         }

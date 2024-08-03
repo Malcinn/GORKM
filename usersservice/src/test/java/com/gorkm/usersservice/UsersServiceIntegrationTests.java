@@ -99,15 +99,13 @@ public class UsersServiceIntegrationTests {
 
 
     @Test
-    public void shouldReturnEmptyBodyIfUserDoesNotExistInBackendService() {
+    public void shouldReturn500statusCodeAndErrorMessageIfUserDoesNotExistOrBackendServiceIsNotAvailable() {
         webTestClient
                 .get()
                 .uri(getLocalUrl() + "/octocat_test_non_existing_user")
                 .exchange()
-                .expectStatus().is2xxSuccessful().expectBody(UserResponseDTO.class)
-                .consumeWith(userResponseDTOEntityExchangeResult -> {
-                    Assertions.assertNull(userResponseDTOEntityExchangeResult.getResponseBody());
-                });
+                .expectStatus().is5xxServerError().expectBody(String.class)
+                .consumeWith(Assertions::assertNotNull);
 
     }
 
