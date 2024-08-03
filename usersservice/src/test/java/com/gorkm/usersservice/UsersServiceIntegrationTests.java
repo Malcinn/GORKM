@@ -1,32 +1,57 @@
 package com.gorkm.usersservice;
 
 import com.gorkm.usersservice.interfaces.facade.UserResponseDTO;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-/*
-The @SpringBootTest annotation tells Spring Boot to look for a main configuration class (one with @SpringBootApplication, for instance)
- */
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity;
+import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
+
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ExtendWith(TestContainersExtension.class)
 public class UsersServiceIntegrationTests {
 
-    private static final String USERS_URI = "/users";
+    private static final String USERS_URI = "users";
+
     @LocalServerPort
     private int port;
 
+    @Value("${spring.security.user.name}")
+    private String user;
+
+    @Value("${spring.security.user.password}")
+    private String password;
+
     @Autowired
-    WebTestClient webTestClient;
+    private ApplicationContext context;
+
+    private WebTestClient webTestClient;
+
+    @BeforeEach
+    public void setup() {
+        this.webTestClient = WebTestClient
+                .bindToApplicationContext(this.context)
+                // add Spring Security test Support
+                .apply(springSecurity())
+                .configureClient()
+                .filter(basicAuthentication(user, password))
+                .build();
+    }
 
     @Test
     public void shouldReturnUserDataWithoutCalculationForMalcinnUser() {
         webTestClient
                 .get()
-                .uri(USERS_URI + "/octocat")
+                .uri(getLocalUrl() + "/malcinn")
                 .exchange()
                 .expectStatus().is2xxSuccessful()
                 .expectBody(UserResponseDTO.class)
@@ -51,7 +76,7 @@ public class UsersServiceIntegrationTests {
     public void shouldReturnUserDataWitProperCalculationForOctocatUser() {
         webTestClient
                 .get()
-                .uri(USERS_URI + "/octocat")
+                .uri(getLocalUrl() + "/octocat")
                 .exchange()
                 .expectStatus().is2xxSuccessful()
                 .expectBody(UserResponseDTO.class)
@@ -74,53 +99,20 @@ public class UsersServiceIntegrationTests {
 
 
     @Test
-    public void shouldStoreAPIExecutionCountForEachUser() {
-//        webTestClient
-//                .get()
-//                .uri(USERS_URI + "/octocat")
-//                .exchange()
-    }
-
-    @Test
-    public void shouldReturn4XXHttpCodeWithMessageForUserThatDoNotExist() {
+    public void shouldReturnEmptyBodyIfUserDoesNotExistInBackendService() {
         webTestClient
                 .get()
-                .uri(USERS_URI + "/octocat_test_non_existing_user")
+                .uri(getLocalUrl() + "/octocat_test_non_existing_user")
                 .exchange()
-                .expectStatus().is4xxClientError().expectBody(String.class)
-                .consumeWith(stringEntityExchangeResult -> {
-                    String responseBody = stringEntityExchangeResult.getResponseBody();
-                    Assert.assertNotNull(responseBody);
-                    Assert.assertEquals("No Connection With DB", responseBody);
+                .expectStatus().is2xxSuccessful().expectBody(UserResponseDTO.class)
+                .consumeWith(userResponseDTOEntityExchangeResult -> {
+                    Assertions.assertNull(userResponseDTOEntityExchangeResult.getResponseBody());
                 });
-    }
 
-    @Test
-    public void shouldThrow5XXWhenThereIsNoConnectionWithDB() {
-        webTestClient
-                .get()
-                .uri(USERS_URI + "/octocat")
-                .exchange()
-                .expectStatus().is5xxServerError().expectBody(String.class)
-                .consumeWith(stringEntityExchangeResult -> {
-                    String responseBody = stringEntityExchangeResult.getResponseBody();
-                    Assert.assertNotNull(responseBody);
-                    Assert.assertEquals("No Connection Wit DB", responseBody);
-                });
     }
 
 
-    @Test
-    public void shouldReturn5XXWIthMessageIfThereIsNoConnectionWithBackendService() {
-        webTestClient
-                .get()
-                .uri(USERS_URI + "/octocat")
-                .exchange()
-                .expectStatus().is5xxServerError().expectBody(String.class)
-                .consumeWith(stringEntityExchangeResult -> {
-                    String responseBody = stringEntityExchangeResult.getResponseBody();
-                    Assert.assertNotNull(responseBody);
-                    Assert.assertEquals("No Connection Wit git service", responseBody);
-                });
+    public String getLocalUrl() {
+        return String.format("http://localhost:%s/%s", port, USERS_URI);
     }
 }

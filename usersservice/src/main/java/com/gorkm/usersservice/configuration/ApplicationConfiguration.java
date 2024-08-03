@@ -4,6 +4,8 @@ import com.gorkm.usersservice.application.CalculationService;
 import com.gorkm.usersservice.application.CalculationServiceImpl;
 import com.gorkm.usersservice.application.UserService;
 import com.gorkm.usersservice.application.UserServiceImpl;
+import com.gorkm.usersservice.application.event.UserAPICallEventListener;
+import com.gorkm.usersservice.infrastructure.jdbc.UserApiStatsRepository;
 import com.gorkm.usersservice.interfaces.facade.UserFacade;
 import com.gorkm.usersservice.interfaces.facade.UserFacadeImpl;
 import org.springframework.cache.annotation.EnableCaching;
@@ -33,6 +35,11 @@ public class ApplicationConfiguration {
     @Bean
     UserFacade userFacade(UserService userService, CalculationService calculationService) {
         return new UserFacadeImpl(userService, calculationService);
+    }
+
+    @Bean
+    UserAPICallEventListener userAPICallEventListener(UserApiStatsRepository userApiStatsRepository) {
+        return new UserAPICallEventListener(userApiStatsRepository);
     }
 
 }
