@@ -1,11 +1,3 @@
-# TO DO
-
-# add comments
-
-# add resilence4J
-
-# add flyway migration tool
-
 ## General information
 
 To run web server execute following command:</br>
