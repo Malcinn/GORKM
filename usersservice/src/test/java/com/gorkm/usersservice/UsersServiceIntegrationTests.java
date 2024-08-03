@@ -65,10 +65,6 @@ public class UsersServiceIntegrationTests {
                     Assertions.assertEquals("https://avatars.githubusercontent.com/u/11162108?v=4", userResponseDTO.avatarUrl());
                     Assertions.assertEquals("2015-02-23T16:11:01Z", userResponseDTO.createdAt());
                     Assertions.assertEquals(null, userResponseDTO.calculations());
-                    // null because liczba_followers dla tego usera to 0
-                    // przez 0 nie można dzielić, wieć operacji calculations nie moża wykonać poprawnie.
-                    // 6 / liczba_followers * (2 + liczba_public_repos)
-                    //        6/0 * (2+8)
                 });
     }
 
@@ -90,10 +86,6 @@ public class UsersServiceIntegrationTests {
                     Assertions.assertEquals("https://avatars.githubusercontent.com/u/583231?v=4", userResponseDTO.avatarUrl());
                     Assertions.assertEquals("2011-01-25T18:44:36Z", userResponseDTO.createdAt());
                     Assertions.assertTrue(userResponseDTO.calculations() > 0);
-                    // null because liczba_followers dla tego usera to 0
-                    // przez 0 nie można dzielić, wieć operacji calculations nie moża wykonać poprawnie.
-                    // 6 / liczba_followers * (2 + liczba_public_repos)
-                    //        6/0 * (2+8)
                 });
     }
 
@@ -106,7 +98,6 @@ public class UsersServiceIntegrationTests {
                 .exchange()
                 .expectStatus().is5xxServerError().expectBody(String.class)
                 .consumeWith(Assertions::assertNotNull);
-
     }
 
 
